@@ -22,5 +22,11 @@ module.exports = {
   },
   getYOnCircle: function (radius, radian, y) {
     return radius * Math.sin(radian) + y
-  }
+  },
+  radToDegree: function(rad) {
+    return rad * (180 / Math.PI)
+  },
+  degreeToRad: function(degree) {
+    return degree / (180 / Math.PI)
+  },
 }

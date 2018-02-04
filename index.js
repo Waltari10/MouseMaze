@@ -2,11 +2,15 @@ const _ = require('lodash')
 const GameObject = require('./GameObject')
 const Mouse = require('./Mouse')
 const uniqid = require('uniqid')
+const Victor = require('victor');
 
 
 const targetFPS = 60
 const targetFrameDuration = (1000 / targetFPS)
 
+global.Vector2 = function(x, y) {
+  return new Victor(x, y)
+}
 global.canvas = document.getElementById('canvas')
 global.ctx = canvas.getContext('2d')
 global.timeDelta = 1000 / targetFPS
@@ -21,19 +25,10 @@ global.instantiate = function (classTemplate, args) {
 }
 global.destroy = function (instance) {
   delete gameObjects[instance.id]
-}
-
-canvas.addEventListener("click", function (e) {
-  const x = e.clientX
-  const y = e.clientY
-  console.log(x, y)
-  // if (Math.pow(x - 50, 2) + Math.pow(y - 50, 2) < Math.pow(50, 2))
-  //   bigGreen.clicked()
-}, false)    
+} 
 
 instantiate(Mouse, {
-  x: 100,
-  y: 100,
+  location: new Vector2(100, 100)
 })
 
 function draw() {
