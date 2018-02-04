@@ -1,12 +1,19 @@
 const _ = require('lodash')
 const GameObject = require('./GameObject')
-const Mouse = require('./Mouse')
 const uniqid = require('uniqid')
-const Block = require('./Block')
 const Victor = require('victor');
+var PF = require('pathfinding');
+const { loop } = require('./loop')
+const { targetFPS } = require('./constants')
+const { createScene } = require('./MouseMazeScene')
 
-const targetFPS = 60
-const targetFrameDuration = (1000 / targetFPS)
+var matrix = [
+  [0, 0, 0, 1, 0],
+  [1, 0, 0, 0, 1],
+  [0, 0, 1, 0, 0],
+];
+
+var grid = new PF.Grid(matrix);
 
 global.Vector2 = function(x, y) {
   return new Victor(x, y)
@@ -27,75 +34,6 @@ global.destroy = function (instance) {
   delete gameObjects[instance.id]
 } 
 
-instantiate(Mouse, {
-  location: new Vector2(100, 100)
-})
-
-instantiate(Block, {
-  location: new Vector2(150, 150),
-  width: 20,
-  height: 100
-})
-
-instantiate(Block, {
-  location: new Vector2(50, 300),
-  width: 100,
-  height: 100
-})
-
-instantiate(Block, {
-  location: new Vector2(500, 250),
-  width: 10,
-  height: 100
-})
-
-instantiate(Block, {
-  location: new Vector2(300, 250),
-  width: 10,
-  height: 100
-})
-
-instantiate(Block, {
-  location: new Vector2(300, 5),
-  width: 1000,
-  height: 10
-})
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  for (const key in gameObjects) {
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(gameObjects[key].x, gameObjects[key].y)
-    gameObjects[key].render()
-    ctx.stroke()
-  }
-}
-
-function loop() {
-  const startTime = Date.now()
-  updateGravity()
-  updateGameObjects()
-  draw()
-  const renderTime = Date.now() - startTime
-  timeDelta = renderTime < targetFrameDuration ? targetFrameDuration : renderTime
-  this.setTimeout(() => {
-    loop()
-  }, targetFrameDuration - renderTime)
-}
-
-function updateGameObjects() {
-  for (const key in gameObjects) {
-    gameObjects[key].update()
-  }
-}
-
-function updateGravity() {
-  for (const key in gameObjects) {
-    if (gameObjects[key].isGravity) {
-      gameObjects[key].updateGravity()
-    }
-  }
-}
+createScene()
 
 loop()
