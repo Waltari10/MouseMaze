@@ -45,15 +45,13 @@ module.exports = class Mouse extends GameObject {
 
     if (this.destination && this.location !== this.destination) {
       const differenceVec = this.destination.clone().subtract(this.location)
-      console.log(differenceVec.lengthSq())
-      if (differenceVec.length() <= 5) {
+      if (differenceVec.length() <= this.speed) {
         this.location = this.destination
       } else {
         this.rotation = differenceVec.angleDeg()
-        this.location = Vector({ start: this.location, hypotenuse: 5, angle: this.rotation })
+        this.location = Vector({ start: this.location, hypotenuse: this.speed, angle: this.rotation })
       }
-    
-      // TODO start moving towards destination at a steady pace
+  
     }
   }
 }

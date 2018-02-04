@@ -2,8 +2,8 @@ const _ = require('lodash')
 const GameObject = require('./GameObject')
 const Mouse = require('./Mouse')
 const uniqid = require('uniqid')
+const Block = require('./Block')
 const Victor = require('victor');
-
 
 const targetFPS = 60
 const targetFrameDuration = (1000 / targetFPS)
@@ -29,6 +29,36 @@ global.destroy = function (instance) {
 
 instantiate(Mouse, {
   location: new Vector2(100, 100)
+})
+
+instantiate(Block, {
+  location: new Vector2(150, 150),
+  width: 20,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(50, 300),
+  width: 100,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(500, 250),
+  width: 10,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(300, 250),
+  width: 10,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(300, 5),
+  width: 1000,
+  height: 10
 })
 
 function draw() {

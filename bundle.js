@@ -1,4 +1,27 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+const GameObject = require('./GameObject')
+
+module.exports = class Block extends GameObject {
+  constructor(props) {
+    super(props)
+    this.width = props.width
+    this.height = props.height
+  }
+  render() {
+    ctx.lineWidth = 1
+    ctx.strokeStyle = 'black'
+    ctx.fillStyle = 'black'
+
+    ctx.moveTo(this.location.x - (this.width / 2), this.location.y - (this.height / 2));
+    ctx.lineTo(this.location.x + this.width, this.location.y - (this.height / 2))
+    ctx.lineTo(this.location.x + this.width, this.location.y + (this.height / 2))
+    ctx.lineTo(this.location.x - (this.width / 2), this.location.y + (this.height / 2))
+    ctx.lineTo(this.location.x - (this.width / 2), this.location.y - (this.height / 2))
+    ctx.fill()
+    
+  }
+}
+},{"./GameObject":2}],2:[function(require,module,exports){
 const {
   getVelocity,
   getForce,
@@ -48,7 +71,7 @@ module.exports = class GameObject {
     // this.y += this.velocity
   }
 }
-},{"./Physics":3}],2:[function(require,module,exports){
+},{"./Physics":4}],3:[function(require,module,exports){
 const GameObject = require('./GameObject')
 const Physics = require('./Physics')
 
@@ -96,19 +119,17 @@ module.exports = class Mouse extends GameObject {
 
     if (this.destination && this.location !== this.destination) {
       const differenceVec = this.destination.clone().subtract(this.location)
-      console.log(differenceVec.lengthSq())
-      if (differenceVec.length() <= 5) {
+      if (differenceVec.length() <= this.speed) {
         this.location = this.destination
       } else {
         this.rotation = differenceVec.angleDeg()
-        this.location = Vector({ start: this.location, hypotenuse: 5, angle: this.rotation })
+        this.location = Vector({ start: this.location, hypotenuse: this.speed, angle: this.rotation })
       }
-    
-      // TODO start moving towards destination at a steady pace
+  
     }
   }
 }
-},{"./GameObject":1,"./Physics":3}],3:[function(require,module,exports){
+},{"./GameObject":2,"./Physics":4}],4:[function(require,module,exports){
 const defaultAcceleration = 9.81
 const airDensity = 1.225 // kg/m3
 const circleDragCoefficient = 0.47
@@ -141,14 +162,14 @@ module.exports = {
     return degree / (180 / Math.PI)
   },
 }
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (global){
 const _ = require('lodash')
 const GameObject = require('./GameObject')
 const Mouse = require('./Mouse')
 const uniqid = require('uniqid')
+const Block = require('./Block')
 const Victor = require('victor');
-
 
 const targetFPS = 60
 const targetFrameDuration = (1000 / targetFPS)
@@ -174,6 +195,36 @@ global.destroy = function (instance) {
 
 instantiate(Mouse, {
   location: new Vector2(100, 100)
+})
+
+instantiate(Block, {
+  location: new Vector2(150, 150),
+  width: 20,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(50, 300),
+  width: 100,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(500, 250),
+  width: 10,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(300, 250),
+  width: 10,
+  height: 100
+})
+
+instantiate(Block, {
+  location: new Vector2(300, 5),
+  width: 1000,
+  height: 10
 })
 
 function draw() {
@@ -215,7 +266,7 @@ function updateGravity() {
 
 loop()
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./GameObject":1,"./Mouse":2,"lodash":5,"uniqid":10,"victor":11}],5:[function(require,module,exports){
+},{"./Block":1,"./GameObject":2,"./Mouse":3,"lodash":6,"uniqid":11,"victor":12}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -17316,7 +17367,7 @@ loop()
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (global){
 var os = require('os');
 
@@ -17456,7 +17507,7 @@ lib.all = function (callback) {
 module.exports = lib;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lib/linux.js":7,"./lib/unix.js":8,"./lib/windows.js":9,"os":13}],7:[function(require,module,exports){
+},{"./lib/linux.js":8,"./lib/unix.js":9,"./lib/windows.js":10,"os":14}],8:[function(require,module,exports){
 var exec = require('child_process').exec;
 
 module.exports = function (iface, callback) {
@@ -17469,7 +17520,7 @@ module.exports = function (iface, callback) {
     });
 };
 
-},{"child_process":12}],8:[function(require,module,exports){
+},{"child_process":13}],9:[function(require,module,exports){
 var exec = require('child_process').exec;
 
 module.exports = function (iface, callback) {
@@ -17487,7 +17538,7 @@ module.exports = function (iface, callback) {
     });
 };
 
-},{"child_process":12}],9:[function(require,module,exports){
+},{"child_process":13}],10:[function(require,module,exports){
 var exec = require('child_process').exec;
 
 var regexRegex = /[-\/\\^$*+?.()|[\]{}]/g;
@@ -17517,7 +17568,7 @@ module.exports = function (iface, callback) {
     });
 };
 
-},{"child_process":12}],10:[function(require,module,exports){
+},{"child_process":13}],11:[function(require,module,exports){
 (function (process){
 /* 
 (The MIT License)
@@ -17558,7 +17609,7 @@ function macHandler(error){
 }
 
 }).call(this,require('_process'))
-},{"_process":14,"macaddress":6}],11:[function(require,module,exports){
+},{"_process":15,"macaddress":7}],12:[function(require,module,exports){
 exports = module.exports = Victor;
 
 /**
@@ -18884,9 +18935,9 @@ function degrees2radian (deg) {
 	return deg / degrees;
 }
 
-},{}],12:[function(require,module,exports){
-
 },{}],13:[function(require,module,exports){
+
+},{}],14:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -18937,7 +18988,7 @@ exports.homedir = function () {
 	return '/'
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -19123,4 +19174,4 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[4]);
+},{}]},{},[5]);
