@@ -1,7 +1,9 @@
-const targetFPS = 60
-const targetFrameDuration = (1000 / targetFPS)
+const TARGET_FPS = 60
+const TARGET_FRAME_DURATION = (1000 / TARGET_FPS)
+const MAP_SCALE = 10
 
 module.exports = {
-  targetFPS,
-  targetFrameDuration
+  TARGET_FPS,
+  TARGET_FRAME_DURATION,
+  MAP_SCALE
 }

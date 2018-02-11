@@ -72,6 +72,9 @@ module.exports = class GameObject {
   }
 }
 },{"./Physics":5}],3:[function(require,module,exports){
+const PF = require('pathfinding')
+const { MAP_SCALE } = require('./constants')
+
 const GameObject = require('./GameObject')
 const Physics = require('./Physics')
 
@@ -83,6 +86,10 @@ function Vector({ start = Vector2(0,0), hypotenuse = 1, angle = 0 }) {
   return newVector
 }
 
+var finder = new PF.AStarFinder({
+  allowDiagonal: true,
+})
+
 module.exports = class Mouse extends GameObject {
   constructor(props) {
     super(props)
@@ -90,11 +97,30 @@ module.exports = class Mouse extends GameObject {
     this.destination = null
     this.speed = 5
     canvas.addEventListener("click", this.onClick, false)
+    this.grid = null
+    this.path = null
   }
   onClick (e) {
     const x = e.clientX
     const y = e.clientY
-    this.destination = Vector2(x, y)
+
+   
+    this.grid = new PF.Grid(mapMatrix.length, mapMatrix[0].length)
+
+    const startX = Math.floor(this.location.x / MAP_SCALE)
+    const startY = Math.floor(this.location.y / MAP_SCALE)
+    const endX = Math.floor(x / MAP_SCALE)
+    const endY = Math.floor(y / MAP_SCALE)
+
+    this.path = finder.findPath(
+      startX,                  
+      startY,                   
+      endX,                    
+      endY,                  
+      this.grid          
+    )
+
+    this.destination = Vector2(this.path[0][0] * MAP_SCALE, this.path[0][1] * MAP_SCALE)
   }
   render() {
     ctx.lineWidth = 1
@@ -118,6 +144,7 @@ module.exports = class Mouse extends GameObject {
   update() {
 
     if (this.destination && this.location !== this.destination) {
+      // Moving towards destination
       const differenceVec = this.destination.clone().subtract(this.location)
       if (differenceVec.length() <= this.speed) {
         this.location = this.destination
@@ -125,12 +152,14 @@ module.exports = class Mouse extends GameObject {
         this.rotation = differenceVec.angleDeg()
         this.location = Vector({ start: this.location, hypotenuse: this.speed, angle: this.rotation })
       }
-  
+    } else if (this.destination && this.path && this.path.length > 0) {
+      // destination reached
+      const destinationArr = this.path.shift()
+      this.destination = Vector2(destinationArr[0] * MAP_SCALE, destinationArr[1] * MAP_SCALE)
     }
   }
 }
-},{"./GameObject":2,"./Physics":5}],4:[function(require,module,exports){
-
+},{"./GameObject":2,"./Physics":5,"./constants":6,"pathfinding":16}],4:[function(require,module,exports){
 const Mouse = require('./Mouse')
 const Block = require('./Block')
 
@@ -213,38 +242,31 @@ module.exports = {
   },
 }
 },{}],6:[function(require,module,exports){
-const targetFPS = 60
-const targetFrameDuration = (1000 / targetFPS)
+const TARGET_FPS = 60
+const TARGET_FRAME_DURATION = (1000 / TARGET_FPS)
+const MAP_SCALE = 10
 
 module.exports = {
-  targetFPS,
-  targetFrameDuration
+  TARGET_FPS,
+  TARGET_FRAME_DURATION,
+  MAP_SCALE
 }
 },{}],7:[function(require,module,exports){
 (function (global){
 const _ = require('lodash')
 const GameObject = require('./GameObject')
 const uniqid = require('uniqid')
-const Victor = require('victor');
-var PF = require('pathfinding');
+const Victor = require('victor')
+const PF = require('pathfinding')
 const { loop } = require('./loop')
-const { targetFPS } = require('./constants')
+const { TARGET_FPS, MAP_SCALE } = require('./constants')
 const { createScene } = require('./MouseMazeScene')
 
-var matrix = [
-  [0, 0, 0, 1, 0],
-  [1, 0, 0, 0, 1],
-  [0, 0, 1, 0, 0],
-];
 
-var grid = new PF.Grid(matrix);
-
-global.Vector2 = function(x, y) {
-  return new Victor(x, y)
-}
+global.Vector2 = function(x, y) { return new Victor(x, y)}
 global.canvas = document.getElementById('canvas')
 global.ctx = canvas.getContext('2d')
-global.timeDelta = 1000 / targetFPS
+global.timeDelta = 1000 / TARGET_FPS
 global.gameObjects = {}
 global.instantiate = function (classTemplate, args) {
   const id = uniqid()
@@ -258,13 +280,22 @@ global.destroy = function (instance) {
   delete gameObjects[instance.id]
 } 
 
-createScene()
+function resizeCanvas() {
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  const mapWidth = Math.floor(canvas.width / 10)
+  const mapHeight = Math.floor(canvas.height / 10)
+  global.mapMatrix = Array(mapWidth).fill(Array(mapHeight))
+}
 
+window.addEventListener('resize', resizeCanvas, false)
+resizeCanvas()
+createScene()
 loop()
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./GameObject":2,"./MouseMazeScene":4,"./constants":6,"./loop":8,"lodash":11,"pathfinding":16,"uniqid":38,"victor":39}],8:[function(require,module,exports){
-const { targetFPS, targetFrameDuration } = require('./constants')
+const { TARGET_FPS, TARGET_FRAME_DURATION } = require('./constants')
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -297,11 +328,11 @@ function loop() {
   updateGameObjects()
   draw()
   const renderTime = Date.now() - startTime
-  timeDelta = renderTime < targetFrameDuration ? targetFrameDuration : renderTime
+  timeDelta = renderTime < TARGET_FRAME_DURATION ? TARGET_FRAME_DURATION : renderTime
   // console.log(timeDelta)
   this.setTimeout(() => {
     loop()
-  }, targetFrameDuration - renderTime)
+  }, TARGET_FRAME_DURATION - renderTime)
 }
 
 module.exports = { loop }

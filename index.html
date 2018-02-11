@@ -2,10 +2,8 @@
 <html>
 
 <head>
-  <title>Let's Draw!</title>
+  <title>Pathfinding</title>
   <link rel='stylesheet' type='text/css' href='stylesheet.css' />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
-
 </head>
 
 <body>
@@ -13,29 +11,6 @@
     This text is displayed if your browser does not support HTML5 Canvas.
   </canvas>
   <script type='text/javascript' src='bundle.js'></script>
-  <script>
-    (function () {
-      var htmlCanvas = document.getElementById('canvas')
-
-      initialize();
-
-      function initialize() {
-        // Register an event listener to call the resizeCanvas() function 
-        // each time the window is resized.
-        window.addEventListener('resize', resizeCanvas, false);
-        // Draw canvas border for the first time.
-        resizeCanvas();
-      }
-
-      // Runs each time the DOM window resize event fires.
-      // Resets the canvas dimensions to match window,
-      // then draws the new borders accordingly.
-      function resizeCanvas() {
-        htmlCanvas.width = window.innerWidth;
-        htmlCanvas.height = window.innerHeight;
-      }
-    })();
-  </script>
 </body>
 
 </html>

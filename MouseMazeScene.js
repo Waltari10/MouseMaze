@@ -1,4 +1,3 @@
-
 const Mouse = require('./Mouse')
 const Block = require('./Block')
 

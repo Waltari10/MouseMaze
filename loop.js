@@ -1,4 +1,4 @@
-const { targetFPS, targetFrameDuration } = require('./constants')
+const { TARGET_FPS, TARGET_FRAME_DURATION } = require('./constants')
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -31,11 +31,11 @@ function loop() {
   updateGameObjects()
   draw()
   const renderTime = Date.now() - startTime
-  timeDelta = renderTime < targetFrameDuration ? targetFrameDuration : renderTime
+  timeDelta = renderTime < TARGET_FRAME_DURATION ? TARGET_FRAME_DURATION : renderTime
   // console.log(timeDelta)
   this.setTimeout(() => {
     loop()
-  }, targetFrameDuration - renderTime)
+  }, TARGET_FRAME_DURATION - renderTime)
 }
 
 module.exports = { loop }
