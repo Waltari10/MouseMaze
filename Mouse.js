@@ -29,9 +29,8 @@ module.exports = class Mouse extends GameObject {
   onClick (e) {
     const x = e.clientX
     const y = e.clientY
-
    
-    this.grid = new PF.Grid(mapMatrix.length, mapMatrix[0].length)
+    this.grid = PFGrid.clone()
 
     const startX = Math.floor(this.location.x / MAP_SCALE)
     const startY = Math.floor(this.location.y / MAP_SCALE)
@@ -46,6 +45,7 @@ module.exports = class Mouse extends GameObject {
       this.grid          
     )
 
+    if (this.path.length === 0) return
     this.destination = Vector2(this.path[0][0] * MAP_SCALE, this.path[0][1] * MAP_SCALE)
   }
   render() {

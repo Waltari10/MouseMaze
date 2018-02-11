@@ -11,9 +11,22 @@ module.exports = class Block extends GameObject {
     ctx.strokeStyle = 'black'
     ctx.fillStyle = 'black'
 
-    ctx.moveTo(this.location.x - (this.width / 2), this.location.y - (this.height / 2));
-    ctx.lineTo(this.location.x + this.width, this.location.y - (this.height / 2))
-    ctx.lineTo(this.location.x + this.width, this.location.y + (this.height / 2))
+    const upperLeftCorner = Vector2(
+      this.location.x - (this.width / 2),
+      this.location.y - (this.height / 2)
+    )
+
+    const upperRightCorner = Vector2(
+      this.location.x + (this.width / 2),
+      this.location.y - (this.height / 2)
+    )
+
+
+    ctx.moveTo(upperLeftCorner.x, upperLeftCorner.y)
+    ctx.lineTo(upperRightCorner.x, upperRightCorner.y)
+
+    ctx.lineTo(this.location.x + (this.width / 2), this.location.y + (this.height / 2))
+
     ctx.lineTo(this.location.x - (this.width / 2), this.location.y + (this.height / 2))
     ctx.lineTo(this.location.x - (this.width / 2), this.location.y - (this.height / 2))
     ctx.fill()
