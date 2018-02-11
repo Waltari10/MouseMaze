@@ -308,15 +308,17 @@ function createMap() {
   const mapHeight = Math.floor(canvas.height / 10)
   const mapMatrix = Array(mapWidth).fill(Array(mapHeight))
   global.PFGrid = new PF.Grid(mapMatrix.length, mapMatrix[0].length)
+  
+  const bumper = 1
 
 
   obstacles.forEach(obstacle => {
 
-    const blockLeftX = Math.ceil((obstacle.location.x - (obstacle.width / 2)) / MAP_SCALE)
-    const blockRightX = Math.ceil((obstacle.location.x + (obstacle.width / 2)) / MAP_SCALE)
+    const blockLeftX = Math.ceil((obstacle.location.x - (obstacle.width / 2)) / MAP_SCALE) - bumper
+    const blockRightX = Math.ceil((obstacle.location.x + (obstacle.width / 2)) / MAP_SCALE) + bumper
 
-    const blockBottomY = Math.ceil((obstacle.location.y - (obstacle.height / 2)) / MAP_SCALE)
-    const blockTopY = Math.ceil((obstacle.location.y + (obstacle.height / 2)) / MAP_SCALE)
+    const blockBottomY = Math.ceil((obstacle.location.y - (obstacle.height / 2)) / MAP_SCALE) - bumper
+    const blockTopY = Math.ceil((obstacle.location.y + (obstacle.height / 2)) / MAP_SCALE) + bumper
 
     for (let x = blockLeftX; x < blockRightX; x++) {
       for (let y = blockBottomY; y < blockTopY; y++) {
