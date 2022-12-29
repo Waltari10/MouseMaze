@@ -16,6 +16,6 @@
     "victor": "^1.1.0"
   },
   "devDependencies": {
-    "webpack": "^3.10.0"
+    "webpack": "^5.75.0"
   }
 }
